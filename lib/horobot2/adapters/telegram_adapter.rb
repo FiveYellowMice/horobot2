@@ -5,11 +5,14 @@ require 'telegram/bot'
 
 class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
 
-  def initialize(bot, config)
-    super(bot, config)
+  CONFIG_SECTION = 'telegram'
+
+
+  def initialize(bot, adapter_config)
+    super(bot, adapter_config)
 
     @bot.threads << Thread.new do
-      Telegram::Bot::Client.run(config['telegram']['token']) do |bot|
+      Telegram::Bot::Client.run(adapter_config['token']) do |bot|
         @bot_api = bot.api
 
         bot.listen do |telegram_message|

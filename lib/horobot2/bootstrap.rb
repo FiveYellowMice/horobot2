@@ -10,6 +10,8 @@ module HoroBot2::Bootstrap
 
   def initialize(cli_options)
     @threads = []
+    @groups = []
+    @adapters = {}
     @logger = Logger.new(STDOUT)
     @logger.debug "Command line parameters are: #{cli_options}"
 
@@ -35,11 +37,18 @@ module HoroBot2::Bootstrap
     @logger.info 'Starting HoroBot2...'
 
     config = YAML.load File.read @options[:config_file]
+    @options = nil
 
+    # Start all adapters
     HoroBot2::Adapters.constants.each do |adapter_name|
       adapter = HoroBot2::Adapters.const_get(adapter_name)
-      adapter.new(self, config)
+      @adapters[adapter::CONFIG_SECTION] = adapter.new(self, config['adapters'][adapter::CONFIG_SECTION])
       @logger.debug "Loaded adapter #{adapter_name}."
+    end
+
+    # Prepare all groups
+    config['groups'].each do |group_config|
+      @groups << HoroBot2::Group.new(self, group_config)
     end
 
     ThreadsWait.all_waits(*@threads)

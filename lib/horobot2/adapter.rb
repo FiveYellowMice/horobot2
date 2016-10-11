@@ -3,6 +3,9 @@
 
 class HoroBot2::Adapter
 
+  attr_reader :bot
+
+
   ##
   # Initialize the adapter, start listening.
 
