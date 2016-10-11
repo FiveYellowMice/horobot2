@@ -6,7 +6,8 @@ class HoroBot2::Adapter
   ##
   # Initialize the adapter, start listening.
 
-  def initialize
+  def initialize(bot, config)
+    @bot = bot
   end
 
 end

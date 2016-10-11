@@ -4,4 +4,4 @@ $: << File.expand_path('../../lib', __FILE__)
 require 'bundler/setup'
 require 'horobot2'
 
-HoroBot2.new(ARGV)
+HoroBot2.new(ARGV).start
