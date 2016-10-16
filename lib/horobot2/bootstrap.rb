@@ -42,14 +42,14 @@ module HoroBot2::Bootstrap
     # Start all adapters
     HoroBot2::Adapters.constants.each do |adapter_name|
       adapter = HoroBot2::Adapters.const_get(adapter_name)
-      @adapters[adapter::CONFIG_SECTION] = adapter.new(self, config['adapters'][adapter::CONFIG_SECTION])
+      @adapters[adapter::CONFIG_SECTION] = adapter.new(self, config[:adapters][adapter::CONFIG_SECTION])
       @logger.debug "Loaded adapter #{adapter_name}."
     end
 
     # Prepare all groups
-    config['groups'].each do |group_config|
+    config[:groups].each do |group_config|
       @groups << HoroBot2::Group.new(self, group_config)
-      @logger.debug "Loaded group '#{group_config['name']}'."
+      @logger.debug "Loaded group '#{group_config[:name]}'."
     end
 
     ThreadsWait.all_waits(*@threads)

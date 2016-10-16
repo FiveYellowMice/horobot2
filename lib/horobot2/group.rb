@@ -13,10 +13,10 @@ class HoroBot2::Group
   def initialize(bot, group_config)
     @bot = bot
 
-    @name = group_config['name'] || raise(ArgumentError, 'Group must have a name.')
+    @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
 
     @connections = {}
-    group_config['connections'].each do |connection_config_name, connection_config|
+    group_config[:connections].each do |connection_config_name, connection_config|
       connection_class = nil
       HoroBot2::Connections.constants.each do |connection_name|
         if connection_config_name == HoroBot2::Connections.const_get(connection_name)::CONFIG_SECTION
