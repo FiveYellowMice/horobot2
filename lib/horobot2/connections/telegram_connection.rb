@@ -18,7 +18,9 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
   ##
   # Send a message.
 
-  def send_message
+  def send_message(message)
+    adapter = @group.bot.adapters[HoroBot2::Adapters::TelegramAdapter::CONFIG_SECTION]
+    adapter.bot_api.send_message(chat_id: @group_id, text: message.text)
   end
 
 

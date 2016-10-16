@@ -5,6 +5,8 @@ require 'telegram/bot'
 
 class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
 
+  attr_reader :bot_api
+
   CONFIG_SECTION = :telegram
 
 
