@@ -3,4 +3,22 @@
 
 class HoroBot2::IncomingMessage
   attr_accessor :time, :author, :text, :image, :group
+
+
+  def initialize(options = {})
+    @time = options[:time] || Time.now
+    @author = options[:author]
+    @text = options[:text]
+    @image = options[:image]
+    @group = options[:group]
+  end
+
+
+  def to_s(level = :simple)
+    if level == :detail
+      "#{@group}: [#{@author}] #{@image ? '<Image> ' : ''}#{@text}"
+    else
+      @text || ''
+    end
+  end
 end

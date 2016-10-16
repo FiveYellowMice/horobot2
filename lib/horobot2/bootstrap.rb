@@ -49,6 +49,7 @@ module HoroBot2::Bootstrap
     # Prepare all groups
     config['groups'].each do |group_config|
       @groups << HoroBot2::Group.new(self, group_config)
+      @logger.debug "Loaded group '#{group_config['name']}'."
     end
 
     ThreadsWait.all_waits(*@threads)

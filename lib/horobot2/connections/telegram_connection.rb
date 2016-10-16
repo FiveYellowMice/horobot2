@@ -3,6 +3,8 @@
 
 class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
 
+  attr_reader :group_id
+
   CONFIG_SECTION = 'telegram'
 
 
