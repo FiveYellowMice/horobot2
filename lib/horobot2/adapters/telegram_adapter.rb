@@ -25,6 +25,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
           end
         end
       end
+      puts 'The code here should never be executed.'
     end
   end
 
@@ -53,6 +54,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
       end
     else
       @bot.logger.debug('TelegramAdapter') { "Message: #{telegram_message}" }
+      @bot.logger.warn('TelegramAdapter') { "Message from unknown group: #{telegram_message.chat.to_compact_hash}" }
     end
   end
 
