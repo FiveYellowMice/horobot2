@@ -3,7 +3,7 @@
 
 class HoroBot2::Group
 
-  attr_reader :bot
+  attr_reader :bot, :temperature
   attr_accessor :name, :connections, :emojis
 
 
@@ -12,6 +12,7 @@ class HoroBot2::Group
 
   def initialize(bot, group_config)
     @bot = bot
+    @temperature = 0
 
     @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
 
@@ -30,6 +31,34 @@ class HoroBot2::Group
         raise "Unknown connection config key '#{connection_config_name}'."
       end
     end
+  end
+
+
+  ##
+  # Process an IncomingMessage.
+
+  def receive(message)
+    @bot.logger.debug("Group '#{self}'") { message.to_s(:detail) }
+
+    # Increase temperature base on the message.
+    heat = 0
+    if message.text
+      heat += [(message.text.length / 2.0).ceil, 20].min
+    end
+    if message.image
+      heat += 5
+    end
+
+    add_temperature(heat)
+    @bot.logger.info("Group '#{self}'") { "Temperature added #{heat}, current: #{self.temperature}." }
+  end
+
+
+  ##
+  # Increase temperature by 'number'.
+
+  def add_temperature(number)
+    @temperature += number
   end
 
 

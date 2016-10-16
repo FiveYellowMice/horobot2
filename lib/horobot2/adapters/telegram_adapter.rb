@@ -28,7 +28,6 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
 
 
   def receive(telegram_message)
-    @bot.logger.debug('TelegramAdapter') { "Message: #{telegram_message}" }
 
     target_group = nil
     @bot.groups.each do |group|
@@ -42,10 +41,16 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         time: Time.at(telegram_message.date),
         author: telegram_message.from.username || telegram_message.from.first_name,
         text: telegram_message.text || telegram_message.caption,
-        image: telegram_message.photo.any? ? true : false,
+        image: telegram_message.sticker || (telegram_message.photo.any? ? true : false),
         group: target_group
       )
-      @bot.logger.info(message.to_s(:detail))
+      begin
+        target_group.receive(message)
+      rescue => e
+        @bot.logger.error("Group #{target_group}") { "#{e}" }
+      end
+    else
+      @bot.logger.debug('TelegramAdapter') { "Message: #{telegram_message}" }
     end
   end
 
