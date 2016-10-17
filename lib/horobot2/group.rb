@@ -39,6 +39,25 @@ class HoroBot2::Group
 
 
   ##
+  # Respond to a Command.
+
+  def command(command)
+    @bot.logger.debug("Group '#{self}'") { "Received command '#{command}'." }
+
+    case command.name
+    when 'status'
+      send_text <<~END
+        Status of #{self.name}:
+        Temperature: #{self.temperature}/#{self.threshold}
+        Emojis: #{emojis.join(' ')}
+      END
+    else
+      @bot.logger.debug("Group '#{self}'") { "Unknown command '#{command.name}'." }
+    end
+  end
+
+
+  ##
   # Process an IncomingMessage.
 
   def receive(message)
@@ -62,7 +81,11 @@ class HoroBot2::Group
     if @temperature >= @threshold
       @temperature = 0
       Concurrent::ScheduledTask.execute(3) do
-        send_emoji
+        begin
+          send_emoji
+        rescue => e
+          @bot.logger.error("Group '#{self}'") { "#{e}" }
+        end
       end
     end
   end
@@ -72,12 +95,8 @@ class HoroBot2::Group
   # Send an Emoji.
 
   def send_emoji
-    outgoing_message = HoroBot2::OutgoingMessage.new({
-      text: @emojis.sample * rand(1..5),
-      group: self
-    })
-
-    send_message(outgoing_message)
+    send_text(@emojis.sample * rand(1..5))
+    @bot.logger.info("Group '#{self}'") { "Sent: '#{message}'." }
   end
 
 
@@ -90,13 +109,23 @@ class HoroBot2::Group
 
 
   ##
+  # Helper method for sending a simple text message.
+
+  def send_text(text)
+    send_message HoroBot2::OutgoingMessage.new(
+      text: text,
+      group: self
+    )
+  end
+
+
+  ##
   # Send an OutgoingMessage.
 
   def send_message(message)
     @connections.each_value do |connection|
       connection.send_message(message)
     end
-    @bot.logger.info("Group '#{self}'") { "Sent: '#{message}'." }
   end
 
 

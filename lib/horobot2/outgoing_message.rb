@@ -14,6 +14,6 @@ class HoroBot2::OutgoingMessage
 
 
   def to_s
-    @text || ''
+    (@text || '').gsub("\n", ' ')
   end
 end

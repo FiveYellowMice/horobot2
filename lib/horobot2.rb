@@ -8,6 +8,7 @@ class HoroBot2
   autoload :Connections, 'horobot2/connections'
   autoload :IncomingMessage, 'horobot2/incoming_message'
   autoload :OutgoingMessage, 'horobot2/outgoing_message'
+  autoload :Command, 'horobot2/command'
   autoload :Emoji, 'horobot2/emoji'
 
 

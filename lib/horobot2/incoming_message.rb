@@ -16,9 +16,9 @@ class HoroBot2::IncomingMessage
 
   def to_s(level = :simple)
     if level == :detail
-      "[#{@author}] #{@image ? '<Image> ' : ''}#{@text && @text.gsub("\n", ' ')}"
+      "[#{@author}] #{@image ? '<Image> ' : ''}#{@text}"
     else
       @text || ''
-    end
+    end.gsub("\n", ' ')
   end
 end
