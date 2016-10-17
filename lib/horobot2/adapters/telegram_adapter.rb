@@ -25,7 +25,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
             begin
               receive(telegram_message)
             rescue => e
-              @bot.logger.error('TelegramAdapter') { "#{e}" }
+              @bot.logger.error('TelegramAdapter') { "#{e} #{e.backtrace_locations[0]}" }
             end
           end
         end
@@ -54,7 +54,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         begin
           target_group.command(command)
         rescue => e
-          @bot.logger.error("Group #{target_group}") { "#{e}" }
+          @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
         end
       else
         message = HoroBot2::IncomingMessage.new(
@@ -67,7 +67,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         begin
           target_group.receive(message)
         rescue => e
-          @bot.logger.error("Group #{target_group}") { "#{e}" }
+          @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
         end
       end
     else

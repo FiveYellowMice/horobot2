@@ -51,6 +51,10 @@ class HoroBot2::Group
         Temperature: #{self.temperature}/#{self.threshold}
         Emojis: #{emojis.join(' ')}
       END
+    when 'temperature'
+      send_text self.temperature.to_s
+    when 'force_send'
+      send_emoji
     else
       @bot.logger.debug("Group '#{self}'") { "Unknown command '#{command.name}'." }
     end
@@ -84,7 +88,7 @@ class HoroBot2::Group
         begin
           send_emoji
         rescue => e
-          @bot.logger.error("Group '#{self}'") { "#{e}" }
+          @bot.logger.error("Group '#{self}'") { "#{e} #{e.backtrace_locations[0]}" }
         end
       end
     end
@@ -95,8 +99,9 @@ class HoroBot2::Group
   # Send an Emoji.
 
   def send_emoji
-    send_text(@emojis.sample * rand(1..5))
-    @bot.logger.info("Group '#{self}'") { "Sent: '#{message}'." }
+    result = @emojis.sample * rand(1..5)
+    send_text(result)
+    @bot.logger.info("Group '#{self}'") { "Sent: '#{result}'." }
   end
 
 
