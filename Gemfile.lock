@@ -8,6 +8,9 @@ GEM
     cinch (2.3.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    concurrent-ruby (1.0.2)
+    concurrent-ruby-ext (1.0.2)
+      concurrent-ruby (~> 1.0.2)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     equalizer (0.0.11)
@@ -30,6 +33,8 @@ PLATFORMS
 
 DEPENDENCIES
   cinch
+  concurrent-ruby
+  concurrent-ruby-ext
   telegram-bot-ruby
 
 BUNDLED WITH

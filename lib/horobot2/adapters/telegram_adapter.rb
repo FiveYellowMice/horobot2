@@ -1,4 +1,5 @@
 require 'telegram/bot'
+require 'concurrent'
 
 ##
 # TelegramAdapter is the Adapter for communicating with Telegram groups using Telegram's bot API.
@@ -18,10 +19,12 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         @bot_api = bot.api
 
         bot.listen do |telegram_message|
-          begin
-            receive(telegram_message)
-          rescue => e
-            @bot.logger.error('TelegramAdapter') { "#{e}" }
+          Concurrent::Future.execute do
+            begin
+              receive(telegram_message)
+            rescue => e
+              @bot.logger.error('TelegramAdapter') { "#{e}" }
+            end
           end
         end
       end

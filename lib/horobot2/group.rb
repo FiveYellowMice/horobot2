@@ -67,7 +67,7 @@ class HoroBot2::Group
 
   def send_emoji
     outgoing_message = HoroBot2::OutgoingMessage.new({
-      text: @emojis[rand(@emojis.length)] * rand(1..5),
+      text: @emojis.sample * rand(1..5),
       group: self
     })
 
