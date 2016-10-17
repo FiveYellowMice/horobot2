@@ -2,6 +2,7 @@ require 'optparse'
 require 'yaml'
 require 'logger'
 require 'thwait'
+require 'concurrent'
 
 ##
 # The Bootstrap module provides essential methods for bootstrapping HoroBot2.
@@ -39,17 +40,28 @@ module HoroBot2::Bootstrap
     config = YAML.load File.read @options[:config_file]
     @options = nil
 
-    # Start all adapters
+    # Start all adapters.
     HoroBot2::Adapters.constants.each do |adapter_name|
       adapter = HoroBot2::Adapters.const_get(adapter_name)
       @adapters[adapter::CONFIG_SECTION] = adapter.new(self, config[:adapters][adapter::CONFIG_SECTION])
       @logger.debug "Loaded adapter #{adapter_name}."
     end
 
-    # Prepare all groups
+    # Prepare all groups.
     config[:groups].each do |group_config|
       @groups << HoroBot2::Group.new(self, group_config)
       @logger.debug "Loaded group '#{group_config[:name]}'."
+    end
+
+    # Cool down groups per minute.
+    Concurrent::TimerTask.execute(execution_interval: 60) do
+      @groups.each do |group|
+        begin
+          group.cool_down
+        rescue => e
+          @logger.error("Group '#{group}'") { "#{e} #{e.backtrace_locations[0]}" }
+        end
+      end
     end
 
     @threads.each do |t| t.abort_on_exception = true end

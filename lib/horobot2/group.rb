@@ -5,8 +5,7 @@ require 'concurrent'
 
 class HoroBot2::Group
 
-  attr_reader :bot, :temperature
-  attr_accessor :name, :connections, :emojis, :threshold
+  attr_reader :bot, :temperature, :name, :connections, :emojis, :threshold, :cooling_speed
 
 
   ##
@@ -19,6 +18,7 @@ class HoroBot2::Group
     @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
     @emojis = (group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"]).map {|x| HoroBot2::Emoji.new(x) }
     @threshold = group_config[:threshold] || 100
+    @cooling_speed = group_config[:cooling_speed] || 10
 
     @connections = {}
     group_config[:connections].each do |connection_config_name, connection_config|
@@ -110,6 +110,17 @@ class HoroBot2::Group
 
   def add_temperature(number)
     @temperature += number
+  end
+
+
+  ##
+  # Decrease temperature by Group's cooling_speed.
+
+  def cool_down
+    if @temperature > 0
+      @temperature = [0, @temperature - @cooling_speed].max
+      @bot.logger.info("Group '#{self}'") { "Cooled down to #{@temperature}." }
+    end
   end
 
 
