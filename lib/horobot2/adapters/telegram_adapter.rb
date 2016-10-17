@@ -82,7 +82,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
   def command?(telegram_message)
     return false unless telegram_message.text
     return false unless telegram_message.text[0] == '/'
-    return false unless telegram_message.text =~ %r(^(?:/\w+@#{@username}(?: |$)|/\w+(?!@)))
+    return false unless telegram_message.text =~ %r[^(?:/\w+@yoitsuhorobot|/\w+(?!@))(?: |$)]
     return true
   end
 
