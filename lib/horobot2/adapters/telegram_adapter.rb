@@ -14,7 +14,8 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
   def initialize(bot, adapter_config)
     super(bot, adapter_config)
 
-    @token = adapter_config[:token]
+    @token = adapter_config[:token] || raise(ArgumentError, 'TelegramAdapter requires a token.')
+    @username = adapter_config[:username] || raise(ArgumentError, 'TelegramAdapter requires a username.')
 
     @bot.threads << Thread.new do
       Telegram::Bot::Client.run(@token) do |bot|
@@ -89,5 +90,15 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
   end
 
   private :command?
+
+
+  def to_hash
+    {
+      token: @token,
+      username: @username
+    }
+  end
+
+  alias_method :to_h, :to_hash
 
 end

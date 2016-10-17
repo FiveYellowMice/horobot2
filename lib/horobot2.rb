@@ -1,6 +1,7 @@
 class HoroBot2
 
   autoload :Bootstrap, 'horobot2/bootstrap'
+  autoload :SaveChanges, 'horobot2/save_changes.rb'
   autoload :Group, 'horobot2/group'
   autoload :Adapter, 'horobot2/adapter'
   autoload :Adapters, 'horobot2/adapters'
@@ -16,5 +17,6 @@ class HoroBot2
   attr_accessor :groups, :threads
 
   include HoroBot2::Bootstrap
+  include HoroBot2::SaveChanges
 
 end

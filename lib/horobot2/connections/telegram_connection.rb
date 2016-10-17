@@ -31,4 +31,7 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
       group_id: @group_id
     }
   end
+
+  alias_method :to_h, :to_hash
+
 end

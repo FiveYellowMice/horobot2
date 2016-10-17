@@ -13,4 +13,10 @@ class HoroBot2::Adapter
     @bot = bot
   end
 
+
+  def to_hash
+  end
+
+  alias_method :to_h, :to_hash
+
 end

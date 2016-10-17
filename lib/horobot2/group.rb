@@ -153,8 +153,10 @@ class HoroBot2::Group
   def to_hash
     {
       name: @name,
-      connections: @connections.map(&:to_hash),
-      emojis: @emojis.map(&:to_hash)
+      threshold: @threshold,
+      cooling_speed: @cooling_speed,
+      emojis: @emojis.map(&:to_s),
+      connections: @connections.map {|key, value| [key, value.to_h]}.to_h
     }
   end
 

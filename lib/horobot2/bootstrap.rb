@@ -44,7 +44,8 @@ module HoroBot2::Bootstrap
   def start
     @logger.info 'Starting HoroBot2...'
 
-    config = YAML.load File.read @options[:config_file]
+    @config_file_name = @options[:config_file]
+    config = YAML.load File.read @config_file_name
     @options = nil
 
     # Start all adapters.
