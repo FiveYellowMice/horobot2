@@ -1,3 +1,5 @@
+require 'concurrent'
+
 ##
 # A Group represents a group on social networks. It can connect to multiple social networks simultaniously using different Connections.
 
@@ -51,13 +53,17 @@ class HoroBot2::Group
       heat += 5
     end
 
-    add_temperature(heat)
-    @bot.logger.info("Group '#{self}'") { "Temperature added #{heat}, current: #{@temperature}." }
+    if heat > 0
+      add_temperature(heat)
+      @bot.logger.info("Group '#{self}'") { "Temperature added #{heat}, current: #{@temperature}." }
+    end
 
     # Select and send Emoji.
     if @temperature >= @threshold
       @temperature = 0
-      send_emoji
+      Concurrent::ScheduledTask.execute(3) do
+        send_emoji
+      end
     end
   end
 
