@@ -51,10 +51,12 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
           arg: /^\/\w+(?:@\w+)? ?(.*)$/.match(telegram_message.text)[1],
           sender: telegram_message.from.username || telegram_message.from.first_name
         )
-        begin
-          target_group.command(command)
-        rescue => e
-          @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
+        Concurrent::Future.execute do
+          begin
+            target_group.command(command)
+          rescue => e
+            @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
+          end
         end
       else
         message = HoroBot2::IncomingMessage.new(
