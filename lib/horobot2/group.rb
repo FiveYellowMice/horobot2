@@ -15,7 +15,7 @@ class HoroBot2::Group
     @temperature = 0
 
     @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
-    @emojis = group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"] # :joy:, :yum:
+    @emojis = (group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"]).map {|x| HoroBot2::Emoji.new(x) }
     @threshold = group_config[:threshold] || 100
 
     @connections = {}

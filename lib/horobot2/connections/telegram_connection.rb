@@ -11,7 +11,7 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
   def initialize(group, connection_config)
     @group = group
 
-    @group_id = connection_config[:group_id]
+    @group_id = connection_config[:group_id] || raise(ArgumentError, 'No group ID is given to the Telegram Connection.')
   end
 
 
