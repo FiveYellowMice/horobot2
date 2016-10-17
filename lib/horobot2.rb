@@ -11,6 +11,8 @@ class HoroBot2
   autoload :OutgoingMessage, 'horobot2/outgoing_message'
   autoload :Command, 'horobot2/command'
   autoload :Emoji, 'horobot2/emoji'
+  autoload :HoroError, 'horobot2/horo_error'
+  autoload :EmojiError, 'horobot2/emoji_error'
 
 
   attr_reader :adapters, :logger

@@ -33,8 +33,7 @@ module HoroBot2::SaveChanges
 
   def save_changes!
     new_config = YAML.dump self.to_hash
-    puts new_config
-    #File.write @config_file_name, new_config
+    File.write @config_file_name, new_config
   end
 
 

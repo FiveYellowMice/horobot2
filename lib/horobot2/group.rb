@@ -55,6 +55,10 @@ class HoroBot2::Group
       send_text self.temperature.to_s
     when 'force_send'
       send_emoji
+    when 'add_emoji'
+      add_emoji command.arg
+    when 'rem_emoji'
+      rem_emoji command.arg
     else
       @bot.logger.debug("Group '#{self}'") { "Unknown command '#{command.name}'." }
     end
@@ -141,6 +145,43 @@ class HoroBot2::Group
   def send_message(message)
     @connections.each_value do |connection|
       connection.send_message(message)
+    end
+  end
+
+
+  ##
+  # Add an Emoji to the Emoji list.
+
+  def add_emoji(new_emoji)
+    begin
+      new_emoji = HoroBot2::Emoji.new(new_emoji)
+      raise(HoroBot2::HoroError, "看来人类还不知道 '#{new_emoji}' 已经在咱的列表中了。") if @emojis.include? new_emoji
+
+      @emojis << new_emoji
+      send_text "汝的 '#{new_emoji}' 借咱用一用。"
+      @bot.logger.info("Group '#{self}'") { "Emoji '#{new_emoji}' is added." }
+      @bot.save_changes
+
+    rescue HoroBot2::EmojiError
+      send_text "咱不觉得 '#{new_emoji}' 是个 Emoji 。"
+    rescue HoroBot2::HoroError => e
+      send_text e.message
+    end
+  end
+
+
+  ##
+  # Remove an Emoji from the Emoji list.
+
+  def rem_emoji(target_emoji)
+    begin
+      raise(HoroBot2::HoroError, "这是咱的最后一个 Emoji 了，不能够放弃。") if @emojis.length <= 1
+      raise(HoroBot2::HoroError, "汝认为 '#{target_emoji}' 会在咱的列表里吗？") unless @emojis.delete(target_emoji)
+      send_text "'#{target_emoji}' 果然不好吃。"
+      @bot.logger.info("Group '#{self}'") { "Emoji '#{new_emoji}' is removed." }
+      @bot.save_changes
+    rescue HoroBot2::HoroError => e
+      send_text e.message
     end
   end
 
