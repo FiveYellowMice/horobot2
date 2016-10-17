@@ -25,7 +25,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
           end
         end
       end
-      puts 'The code here should never be executed.'
+      puts 'The code here should never be executed. (Inside TelegramAdapter)'
     end
   end
 

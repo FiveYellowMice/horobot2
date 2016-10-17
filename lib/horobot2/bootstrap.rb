@@ -52,7 +52,9 @@ module HoroBot2::Bootstrap
       @logger.debug "Loaded group '#{group_config[:name]}'."
     end
 
+    @threads.each do |t| t.abort_on_exception = true end
     ThreadsWait.all_waits(*@threads)
+    puts 'The code here should not be executed. (Inside Bootstrap)'
   end
 
 end
