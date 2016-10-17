@@ -14,7 +14,7 @@ module HoroBot2::Bootstrap
     @groups = []
     @adapters = {}
     @logger = Logger.new(STDOUT)
-    @logger.debug "Command line parameters are: #{cli_options}"
+    @logger.level = Logger::Severity::INFO
 
     @options = {
       config_file: 'config.yaml'
@@ -22,8 +22,13 @@ module HoroBot2::Bootstrap
     OptionParser.new do |opts|
       opts.banner = 'Usage: horobot [options]'
 
-      opts.on('-c', '--config=FILE', 'Use a config file other than config.yaml.') do |arg|
+      opts.on('-c', '--config FILE', 'Use a config file other than config.yaml.') do |arg|
         @options[:config_file] = arg.to_s
+      end
+
+      opts.on('-d', '--debug [LEVEL]', 'Output debug log or adjust log level.') do |arg|
+        level = arg ? arg.upcase.to_sym : :DEBUG
+        @logger.level = Logger::Severity.const_get(level)
       end
 
       opts.on('-h', '--help', 'Show this help message.') do
@@ -31,6 +36,8 @@ module HoroBot2::Bootstrap
         exit
       end
     end.parse!
+
+    @logger.debug "Command line parameters are: #{cli_options}"
   end
 
 
