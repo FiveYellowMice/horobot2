@@ -178,7 +178,7 @@ class HoroBot2::Group
       raise(HoroBot2::HoroError, "这是咱的最后一个 Emoji 了，不能够放弃。") if @emojis.length <= 1
       raise(HoroBot2::HoroError, "汝认为 '#{target_emoji}' 会在咱的列表里吗？") unless @emojis.delete(target_emoji)
       send_text "'#{target_emoji}' 果然不好吃。"
-      @bot.logger.info("Group '#{self}'") { "Emoji '#{new_emoji}' is removed." }
+      @bot.logger.info("Group '#{self}'") { "Emoji '#{target_emoji}' is removed." }
       @bot.save_changes
     rescue HoroBot2::HoroError => e
       send_text e.message
