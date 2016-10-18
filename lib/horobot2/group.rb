@@ -50,12 +50,17 @@ class HoroBot2::Group
         send_text <<~END
           Status of #{self.name}:
           Temperature: #{self.temperature}/#{self.threshold}
+          Cooling speed: #{self.cooling_speed}
           Emojis: #{emojis.join(' ')}
         END
       when 'temperature'
         send_text self.temperature.to_s
       when 'force_send'
         send_emoji
+      when 'set_threshold'
+        set_threshold command.arg.to_i
+      when 'set_cooling_speed'
+        set_cooling_speed command.arg.to_i
       when 'add_emoji'
         add_emoji command.arg
       when 'rem_emoji'
@@ -150,6 +155,30 @@ class HoroBot2::Group
     @connections.each_value do |connection|
       connection.send_message(message)
     end
+  end
+
+
+  ##
+  # Set the threshold.
+
+  def set_threshold(value)
+    raise(HoroBot2::HoroError, '阈值必须得是大于 0 的整数呐，不然汝想让每条消息都被咱照顾？') unless value > 0
+    @threshold = value
+    send_text "说好了，以后阈值就是 #{value} 了。"
+    @bot.logger.info("Group '#{self}'") { "Threshold has set to #{value}." }
+    @bot.save_changes
+  end
+
+
+  ##
+  # Set the cooling speed.
+
+  def set_cooling_speed(value)
+    raise(HoroBot2::HoroError, '明明是要冷却，可却设定了负值，是要加热还是冷却呢？') if value < 0
+    @cooling_speed = value
+    send_text "说好了，以后冷却速度就是 #{value} 了。"
+    @bot.logger.info("Group '#{self}'") { "Cooling speed has set to #{value}." }
+    @bot.save_changes
   end
 
 
