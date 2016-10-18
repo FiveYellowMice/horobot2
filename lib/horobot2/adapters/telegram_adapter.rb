@@ -21,13 +21,19 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
       Telegram::Bot::Client.run(@token) do |bot|
         @bot_api = bot.api
 
-        bot.listen do |telegram_message|
-          Concurrent::Future.execute do
-            begin
-              receive(telegram_message)
-            rescue => e
-              @bot.logger.error('TelegramAdapter') { "#{e} #{e.backtrace_locations[0]}" }
+        loop do
+          begin
+            bot.listen do |telegram_message|
+              Concurrent::Future.execute do
+                begin
+                  receive(telegram_message)
+                rescue => e
+                  @bot.logger.error('TelegramAdapter') { "#{e} #{e.backtrace_locations[0]}" }
+                end
+              end
             end
+          rescue Telegram::Bot::Exceptions::ResponseError => e
+            @bot.logger.error('TelegramAdapter') { "#{e}" }
           end
         end
       end
@@ -43,6 +49,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
       next unless connection = group.connections[HoroBot2::Connections::TelegramConnection::CONFIG_SECTION]
       next unless connection.group_id == telegram_message.chat.id
       target_group = group
+      break
     end
 
     if target_group
