@@ -34,7 +34,17 @@ class HoroBot2::Connections::IRCConnection
   def send_message(message)
     @group.bot.logger.debug("IRCConnection '#{@group}'") { "Sending: #{message}" }
 
-    @channel.send(message.text)
+    line_count = 0
+    message.text.strip.split("\n").each do |line|
+      @channel.send(line)
+      sleep 1
+      line_count += 1
+      if line_count > 2
+        sleep 2
+        @channel.send('...')
+        break
+      end
+    end
   end
 
 
