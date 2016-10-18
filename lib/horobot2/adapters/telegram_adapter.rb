@@ -46,7 +46,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
 
     # Drop the message if it's from long time ago.
     message_time = Time.at(telegram_message.date)
-    if Time.now - message_time > 600
+    if Time.now - message_time > 120
       @bot.logger.debug('TelegramConnection') { "Dropped message from long time ago: #{telegram_message}" }
       return
     end
@@ -85,7 +85,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         begin
           target_group.receive(message)
         rescue => e
-          @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
+          @bot.logger.error("Group '#{target_group}'") { "#{e} #{e.backtrace_locations[0]}" }
         end
       end
     else
