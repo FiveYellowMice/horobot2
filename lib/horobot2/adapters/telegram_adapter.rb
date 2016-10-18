@@ -44,6 +44,14 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
 
   def receive(telegram_message)
 
+    # Drop the message if it's from long time ago.
+    message_time = Time.at(telegram_message.date)
+    if Time.now - message_time > 600
+      @bot.logger.debug('TelegramConnection') { "Dropped message from long time ago: #{telegram_message}" }
+      return
+    end
+
+    # Find the group the message belongs to.
     target_group = nil
     @bot.groups.each do |group|
       next unless connection = group.connections[HoroBot2::Connections::TelegramConnection::CONFIG_SECTION]
@@ -68,7 +76,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
         end
       else
         message = HoroBot2::IncomingMessage.new(
-          time: Time.at(telegram_message.date),
+          time: message_time,
           author: telegram_message.from.username || telegram_message.from.first_name,
           text: telegram_message.text || telegram_message.caption,
           image: telegram_message.sticker || (telegram_message.photo.any? ? true : false),
