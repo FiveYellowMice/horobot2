@@ -33,7 +33,7 @@ class HoroBot2::Emoji < String
   end
 
   def initialize(*args)
-    raise HoroBot2::EmojiError unless args[0] =~ EmojiRegex::ONE
+    raise(HoroBot2::EmojiError, "咱不觉得 '#{args[0]}' 是个 Emoji 。") unless args[0] =~ EmojiRegex::ONE
     super(*args)
   end
 
