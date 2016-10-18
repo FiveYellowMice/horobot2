@@ -1,4 +1,5 @@
 require 'cinch'
+require 'concurrent'
 
 ##
 # IRCAdapter is the Adapter for communicating with IRC channels.
@@ -105,16 +106,31 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
         if target_group.connections[HoroBot2::Connections::IRCConnection::CONFIG_SECTION].ignored_users.include? irc_message.user.nick
           @bot.logger.debug("IRCConnection '#{target_group}'") { "Ignored message from #{irc_message.user.nick}" }
         else
-          message = HoroBot2::IncomingMessage.new(
-            time: irc_message.time,
-            author: irc_message.user.nick,
-            text: irc_message.message,
-            group: target_group
-          )
-          begin
-            target_group.receive(message)
-          rescue => e
-            @bot.logger.error("Group '#{target_group}'") { "#{e} #{e.backtrace_locations[0]}" }
+          if command? irc_message
+            command = HoroBot2::Command.new(
+              name: /^horo\/(\w+)/i.match(irc_message.message)[1],
+              arg: /^horo\/\w+(?: (.*))?$/i.match(irc_message.message)[1],
+              sender: irc_message.user.nick
+            )
+            Concurrent::Future.execute do
+              begin
+                target_group.command(command)
+              rescue => e
+                @bot.logger.error("Group #{target_group}") { "#{e} #{e.backtrace_locations[0]}" }
+              end
+            end
+          else
+            message = HoroBot2::IncomingMessage.new(
+              time: irc_message.time,
+              author: irc_message.user.nick,
+              text: irc_message.message,
+              group: target_group
+            )
+            begin
+              target_group.receive(message)
+            rescue => e
+              @bot.logger.error("Group '#{target_group}'") { "#{e} #{e.backtrace_locations[0]}" }
+            end
           end
         end
       else
@@ -124,6 +140,13 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
     end
 
     private :receive
+
+
+    def command?(irc_message)
+      return false unless irc_message.message
+      return false unless irc_message.message =~ /^horo\/\w+/i
+      return true
+    end
 
 
     def to_hash
