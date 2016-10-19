@@ -3,7 +3,7 @@
 
 class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
 
-  attr_reader :group_id
+  attr_reader :group_id, :quiet
 
   CONFIG_SECTION = :telegram
 
@@ -12,6 +12,7 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
     @group = group
 
     @group_id = connection_config[:group_id] || raise(ArgumentError, 'No group ID is given to TelegramConnection.')
+    @quiet = connection_config[:quiet] || false
   end
 
 
@@ -19,6 +20,8 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
   # Send a message.
 
   def send_message(message)
+    return if @quiet
+
     @group.bot.logger.debug("TelegramConnection '#{@group}'") { "Sending: #{message}" }
 
     adapter = @group.bot.adapters[HoroBot2::Adapters::TelegramAdapter::CONFIG_SECTION]
@@ -28,7 +31,8 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
 
   def to_hash
     {
-      group_id: @group_id
+      group_id: @group_id,
+      quiet: @quiet
     }
   end
 
