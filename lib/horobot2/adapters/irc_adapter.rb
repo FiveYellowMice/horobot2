@@ -108,8 +108,8 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
         else
           if command? irc_message
             command = HoroBot2::Command.new(
-              name: /^horo\/(\w+)/i.match(irc_message.message)[1],
-              arg: /^horo\/\w+(?: (.*))?$/i.match(irc_message.message)[1],
+              name: %r[^(?:horo|#{@nick}: ?)/(\w+)]i.match(irc_message.message)[1],
+              arg: %r[^(?:horo|#{@nick}: ?)/\w+(?: (.*)$)?]i.match(irc_message.message)[1],
               sender: irc_message.user.nick
             )
             Concurrent::Future.execute do
@@ -144,7 +144,7 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
 
     def command?(irc_message)
       return false unless irc_message.message
-      return false unless irc_message.message =~ /^horo\/\w+/i
+      return false unless irc_message.message =~ %r[^(?:horo|#{@nick}: ?)/\w+]i
       return true
     end
 
