@@ -13,3 +13,13 @@ task :get_config do
   `mv config.yaml config.yaml.bak`
   File.write 'config.yaml', server_config
 end
+
+task :push_config do
+  raise('config.yaml does not exist.') unless File.exist?('config.yaml')
+
+  temp_id = ('a'..'z').to_a.shuffle[0,8].join
+
+  sh "scp config.yaml potato1:/tmp/config.yaml.#{temp_id}"
+  sh "ssh -t potato1 sudo -u labrat cp /tmp/config.yaml.#{temp_id} /var/lib/labrat/horobot2/config.yaml"
+  sh "ssh potato1 rm /tmp/config.yaml.#{temp_id}"
+end
