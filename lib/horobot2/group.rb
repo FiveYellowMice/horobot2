@@ -119,7 +119,13 @@ class HoroBot2::Group
   # Send an Emoji.
 
   def send_emoji
-    result = @emojis.sample * rand(1..5)
+    selected = @emojis.sample
+    result = if selected.single?
+      selected * rand(1..5)
+    else
+      selected
+    end
+
     send_text(result)
     @bot.logger.info("Group '#{self}'") { "Sent: '#{result}'." }
   end
@@ -196,7 +202,12 @@ class HoroBot2::Group
     new_emoji = HoroBot2::Emoji.new(new_emoji)
     raise(HoroBot2::HoroError, "看来人类还不知道 '#{new_emoji}' 已经在咱的列表中了。") if @emojis.include? new_emoji
 
-    @emojis << new_emoji
+    @emojis << if new_emoji.sequence_of_same?
+      new_emoji.to_single_emoji
+    else
+      new_emoji
+    end
+
     send_text "汝的 '#{new_emoji}' 借咱用一用。"
     @bot.logger.info("Group '#{self}'") { "Emoji '#{new_emoji}' is added." }
     @bot.save_changes
@@ -207,8 +218,10 @@ class HoroBot2::Group
   # Remove an Emoji from the Emoji list.
 
   def rem_emoji(target_emoji)
+    raise(HoroBot2::HoroError, "汝认为 '#{target_emoji}' 会在咱的列表里吗？") unless @emojis.include?(target_emoji)
     raise(HoroBot2::HoroError, "这是咱的最后一个 Emoji 了，不能够放弃。") if @emojis.length <= 1
-    raise(HoroBot2::HoroError, "汝认为 '#{target_emoji}' 会在咱的列表里吗？") unless @emojis.delete(target_emoji)
+
+    @emojis.delete(target_emoji)
     send_text "'#{target_emoji}' 果然不好吃。"
     @bot.logger.info("Group '#{self}'") { "Emoji '#{target_emoji}' is removed." }
     @bot.save_changes

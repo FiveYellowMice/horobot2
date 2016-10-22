@@ -29,12 +29,35 @@ class HoroBot2::Emoji < String
 
     ONE = Regexp.new("^(?:#{final})$")
     MANY = Regexp.new(final)
+    SEQUENCE = Regexp.new("^(?:#{final})+$")
+    SEQUENCES = Regexp.new("(?:#{final})+")
+    SEQUENCE_OF_SAME = Regexp.new("^(#{final})\\1*$")
 
   end
 
   def initialize(*args)
-    raise(HoroBot2::EmojiError, "咱不觉得 '#{args[0]}' 是个 Emoji 。") unless args[0] =~ EmojiRegex::ONE
+    raise(HoroBot2::EmojiError, "咱不觉得 '#{args[0]}' 是个 Emoji 。") unless args[0] =~ EmojiRegex::SEQUENCE
     super(*args)
+  end
+
+  def valid?
+    self =~ EmojiRegex::SEQUENCE
+  end
+
+  def single?
+    self =~ EmojiRegex::ONE
+  end
+
+  def sequence_of_same?
+    self =~ EmojiRegex::SEQUENCE_OF_SAME
+  end
+
+  def to_single_emoji
+    if single?
+      self
+    else
+      EmojiRegex::MANY.match(self)[0]
+    end
   end
 
 end
