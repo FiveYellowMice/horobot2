@@ -13,6 +13,8 @@ module HoroBot2::Bootstrap
     @threads = []
     @groups = []
     @adapters = {}
+
+    STDOUT.sync = true
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::Severity::INFO
 

@@ -51,16 +51,7 @@ class HoroBot2::Group
           HoroBot2, made with \u{1f4a6} by FiveYellowMice.
           https://github.com/FiveYellowMice/horobot2
 
-          IRC users need to prepend 'horo' before the command.
-
-          Available commands:
-          /status            Show the status of this group.
-          /help              Show this help message.
-          /temperature       Show the current temperature of this group.
-          /force_send        Send an Emoji, right now.
-          /set_threshold     Set the threshold of this group.
-          /set_cooling_speed Set the cooling speed of this group.
-          /{add|rem}_emoji   Add or remove Emoji to be sent.
+          For help related to commands, see https://horobot.ml/commands.php .
         END
       when 'status'
         send_text <<~END
