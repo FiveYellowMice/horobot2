@@ -200,13 +200,13 @@ class HoroBot2::Group
 
   def add_emoji(new_emoji)
     new_emoji = HoroBot2::Emoji.new(new_emoji)
+    if new_emoji.sequence_of_same?
+      new_emoji = new_emoji.to_single_emoji
+    end
+
     raise(HoroBot2::HoroError, "看来人类还不知道 '#{new_emoji}' 已经在咱的列表中了。") if @emojis.include? new_emoji
 
-    @emojis << if new_emoji.sequence_of_same?
-      new_emoji.to_single_emoji
-    else
-      new_emoji
-    end
+    @emojis << new_emoji
 
     send_text "汝的 '#{new_emoji}' 借咱用一用。"
     @bot.logger.info("Group '#{self}'") { "Emoji '#{new_emoji}' is added." }
