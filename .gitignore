@@ -51,3 +51,4 @@ build-iPhoneSimulator/
 
 # Configuration
 /config.yaml
+/config.yaml.*
