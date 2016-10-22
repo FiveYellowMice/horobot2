@@ -36,6 +36,7 @@ class HoroBot2::Emoji < String
   end
 
   def initialize(*args)
+    raise(HoroBot2::EmojiError, "汝不想被刷屏吧？") if args[0].length > 64
     raise(HoroBot2::EmojiError, "咱不觉得 '#{args[0]}' 是个 Emoji 。") unless args[0] =~ EmojiRegex::SEQUENCE
     super(*args)
   end
