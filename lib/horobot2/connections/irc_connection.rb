@@ -47,9 +47,12 @@ class HoroBot2::Connections::IRCConnection
   # Send a message.
 
   def send_message(message)
-    @group.bot.logger.debug("IRCConnection '#{@group}'") { "Sending: #{message}" }
-
-    @channel.send(message.text.gsub("\n", '  '))
+    if @channel
+      @group.bot.logger.debug("IRCConnection '#{@group}'") { "Sending: #{message}" }
+      @channel.send(message.text.gsub("\n", '  '))
+    else
+      @group.bot.logger.debug("IRCConnection '#{@group}'") { "Because channel not connected, message not sent: #{message}" }
+    end
   end
 
 
