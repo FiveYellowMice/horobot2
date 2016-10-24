@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HoroBot2 Status</title>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+      .group-list {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .group-list-item {
+        margin: 2.6rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HoroBot2 Status</h1>
+    <ul class="group-list">
+      <% data[:groups].each do |group| %>
+      <li class="group-list-item">
+        <a href="/status/<%= h u group.name %>"><%= h group.name %></a>
+      </li>
+      <% end %>
+    </ul>
+  </body>
+</html>

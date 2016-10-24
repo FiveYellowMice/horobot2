@@ -43,6 +43,7 @@ module HoroBot2::SaveChanges
   def to_hash
     {
       adapters: @adapters.map {|key, value| [key, value.to_h] }.to_h,
+      web_interface: @web_interface.to_h,
       groups: @groups.map(&:to_h)
     }
   end

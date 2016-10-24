@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HoroBot2 Status</title>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+      .emoji-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      .emoji-list-hidden {
+        display: none;
+      }
+      .emoji-list-item {
+        display: inline-block;
+        white-space: nowrap;
+        margin: 0.125rem;
+        padding: 0.125rem;
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <% group = data[:group] %>
+    <h1>Status of <%= h group.name %></h1>
+    <a href="/status">Back</a>
+
+    <p><strong>Temperature: </strong>(<%= group.temperature %>/<%= group.threshold %>)</p>
+    <p><strong>Cooling speed: </strong><%= group.cooling_speed %></p>
+    <p><strong>Emojis: </strong><a class="emoji-list-switch" href="javascript:void(0)">Show/Hide</a></p>
+
+    <ul class="emoji-list">
+      <% group.emojis.each do |emoji| %>
+      <li class="emoji-list-item"><%= h emoji %></li>
+      <% end %>
+    </ul>
+
+    <script>
+      document.querySelector('.emoji-list-switch').addEventListener('click', function(event) {
+        var element = document.querySelector('.emoji-list')
+        if (element.className.split(' ').indexOf('emoji-list-hidden') > -1) {
+          element.className = element.className.split(' ').filter(function(name) {
+            return name !== 'emoji-list-hidden'
+          }).join(' ')
+        } else {
+          element.className = element.className + ' emoji-list-hidden'
+        }
+      })
+    </script>
+  </body>
+</html>

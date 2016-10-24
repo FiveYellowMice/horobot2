@@ -2,6 +2,7 @@ class HoroBot2
 
   autoload :Bootstrap, 'horobot2/bootstrap'
   autoload :SaveChanges, 'horobot2/save_changes.rb'
+  autoload :WebInterface, 'horobot2/web_interface.rb'
   autoload :Group, 'horobot2/group'
   autoload :Adapter, 'horobot2/adapter'
   autoload :Adapters, 'horobot2/adapters'
@@ -15,7 +16,7 @@ class HoroBot2
   autoload :EmojiError, 'horobot2/emoji_error'
 
 
-  attr_reader :adapters, :logger
+  attr_reader :adapters, :logger, :web_interface
   attr_accessor :groups, :threads
 
   include HoroBot2::Bootstrap

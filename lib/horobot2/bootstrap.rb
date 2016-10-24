@@ -74,6 +74,10 @@ module HoroBot2::Bootstrap
       end
     end
 
+    # Initialize WebInterface.
+    @web_interface = HoroBot2::WebInterface.new(self, config[:web_interface])
+    @web_interface.start
+
     #@threads.each do |t| t.abort_on_exception = true end
     Thread.abort_on_exception = true
     ThreadsWait.all_waits(*@threads)

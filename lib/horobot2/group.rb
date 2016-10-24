@@ -59,6 +59,7 @@ class HoroBot2::Group
           Temperature: #{self.temperature}/#{self.threshold}
           Cooling speed: #{self.cooling_speed}
           Emojis: #{emojis.join(' ')}
+          More: #{@bot.web_interface.baseurl}/status
         END
       when 'temperature'
         send_text self.temperature.to_s
