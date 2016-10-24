@@ -74,7 +74,8 @@ module HoroBot2::Bootstrap
       end
     end
 
-    @threads.each do |t| t.abort_on_exception = true end
+    #@threads.each do |t| t.abort_on_exception = true end
+    Thread.abort_on_exception = true
     ThreadsWait.all_waits(*@threads)
     puts 'The code here should not be executed. (Inside Bootstrap)'
   end

@@ -35,7 +35,8 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
 
   class IRCServer
 
-    attr_reader :address, :port, :nick, :framework, :framework_started
+    attr_reader :address, :port, :nick, :framework, :server_connected
+    attr_accessor :server_connect_callbacks
 
 
     def initialize(bot, server_config)
@@ -55,10 +56,14 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
         end
       end
 
+      # Replace the logger of Cinch with a self-created one.
+      # Which logs everything Cinch produces to HoroBot2's logger.
       logger_rep = LoggerListReplacement.new
       logger_rep.real_logger = @bot.logger
       @framework.loggers = logger_rep
 
+      # A workaround for scoping issue about yielding
+      # that does not allow calling methods in the scope the block locates instead of where yield locates.
       channel_message_handler = proc do |irc_message|
         begin
           receive irc_message
@@ -70,9 +75,13 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
         channel_message_handler.call irc_message
       end
 
-      @framework_started = false
+      # Indicate whether the server is connected or not.
+      # When it's connected, call every procs given by IRCConnection s.
+      @server_connected = false
+      @server_connect_callbacks = []
       connect_event_handler = proc do
-        @framework_started = true
+        @server_connected = true
+        @server_connect_callbacks.shift.call while @server_connect_callbacks.any?
       end
       @framework.on :connect do
         connect_event_handler.call

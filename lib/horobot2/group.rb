@@ -143,7 +143,7 @@ class HoroBot2::Group
   # Decrease temperature by Group's cooling_speed.
 
   def cool_down
-    if @temperature > 0
+    if @cooling_speed > 0 && @temperature > 0
       @temperature = [0, @temperature - @cooling_speed].max
       @bot.logger.info("Group '#{self}'") { "Cooled down to #{@temperature}." }
     end

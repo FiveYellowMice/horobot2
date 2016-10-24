@@ -17,14 +17,29 @@ class HoroBot2::Connections::IRCConnection
     @channel_name = connection_config[:channel_name] || raise(ArgumentError, 'No channel name is given to IRCConnection.')
     @ignored_users = connection_config[:ignored_users] || []
 
-    server = @group.bot.adapters[HoroBot2::Adapters::IRCAdapter::CONFIG_SECTION].servers[@server]
-    raise ArgumentError, "Server '#{@server}' does not exist." unless server
+    adapter_server = @group.bot.adapters[HoroBot2::Adapters::IRCAdapter::CONFIG_SECTION].servers[@server]
+    raise ArgumentError, "Server '#{@server}' does not exist." unless adapter_server
 
-    # Wait for IRCServer to connect before join.
+    # Join channel after the server has connected.
+    # If it's already connected, join right now.
+    # Otherwise add a proc that does the same thing to a list that will be called successively by IRCAdapter when the server is connected.
     Concurrent::Future.execute do
-      until server.framework_started do sleep 0.5 end
-      @channel = server.framework.join(@channel_name)
+      if adapter_server.server_connected
+        connect
+      else
+        adapter_server.server_connect_callbacks << proc do
+          connect
+        end
+      end
     end
+  end
+
+
+  ##
+  # Join the IRC channel. Should be called after the server has connected.
+  def connect
+    adapter_server = @group.bot.adapters[HoroBot2::Adapters::IRCAdapter::CONFIG_SECTION].servers[@server]
+    @channel = adapter_server.framework.join(@channel_name)
   end
 
 
