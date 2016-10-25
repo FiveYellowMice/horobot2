@@ -1,3 +1,7 @@
+task :stop_remote do
+  sh 'ssh -t potato1 sudo systemctl stop horobot'
+end
+
 task :get_config do
   require 'io/console'
 
