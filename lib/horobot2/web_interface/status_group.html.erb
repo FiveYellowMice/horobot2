@@ -8,14 +8,14 @@
       html {
         font-family: sans-serif;
       }
-      .emoji-list {
+      .emoji-list, .chatlog-emoji-list {
         list-style-type: none;
         padding: 0;
       }
-      .emoji-list-hidden {
+      .emoji-list-hidden, .chatlog-emoji-list-hidden {
         display: none;
       }
-      .emoji-list-item {
+      .emoji-list-item, .chatlog-emoji-list-item {
         display: inline-block;
         white-space: nowrap;
         margin: 0.125rem;
@@ -39,16 +39,28 @@
       <% end %>
     </ul>
 
+    <% if group.chatlog_emojis.any? %>
+    <p><strong>Emojis from chat log: </strong><a class="chatlog-emoji-list-switch" href="javascript:void(0)">Show/Hide</a></p>
+
+    <ul class="chatlog-emoji-list chatlog-emoji-list-hidden">
+      <% group.chatlog_emojis.each do |emoji| %>
+      <li class="chatlog-emoji-list-item"><%= h emoji %></li>
+      <% end %>
+    </ul>
+    <% end %>
+
     <script>
-      document.querySelector('.emoji-list-switch').addEventListener('click', function(event) {
-        var element = document.querySelector('.emoji-list')
-        if (element.className.split(' ').indexOf('emoji-list-hidden') > -1) {
-          element.className = element.className.split(' ').filter(function(name) {
-            return name !== 'emoji-list-hidden'
-          }).join(' ')
-        } else {
-          element.className = element.className + ' emoji-list-hidden'
-        }
+      ['emoji-list', 'chatlog-emoji-list'].forEach(function(togglableName) {
+        document.querySelector('.' + togglableName + '-switch').addEventListener('click', function(event) {
+          var element = document.querySelector('.' + togglableName)
+          if (element.className.split(' ').indexOf(togglableName + '-hidden') > -1) {
+            element.className = element.className.split(' ').filter(function(name) {
+              return name !== togglableName + '-hidden'
+            }).join(' ')
+          } else {
+            element.className = element.className + ' ' + togglableName + '-hidden'
+          }
+        })
       })
     </script>
   </body>

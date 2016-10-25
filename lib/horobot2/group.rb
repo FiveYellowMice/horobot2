@@ -5,7 +5,7 @@ require 'concurrent'
 
 class HoroBot2::Group
 
-  attr_reader :bot, :temperature, :name, :connections, :emojis, :threshold, :cooling_speed
+  attr_reader :bot, :temperature, :name, :connections, :emojis, :chatlog_emojis, :threshold, :cooling_speed
 
 
   ##
@@ -14,6 +14,7 @@ class HoroBot2::Group
   def initialize(bot, group_config)
     @bot = bot
     @temperature = 0
+    @chatlog_emojis = []
 
     @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
     @emojis = (group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"]).map {|x| HoroBot2::Emoji.new(x) }
@@ -88,6 +89,26 @@ class HoroBot2::Group
   def receive(message)
     @bot.logger.debug("Group '#{self}'") { message.to_s(:detail) }
 
+    # Get Emojis from message text.
+    if message.text
+      matches = message.text.scan(HoroBot2::Emoji::EmojiRegex::SEQUENCES)
+      if matches.any?
+        @bot.logger.debug("Group '#{self}'") { "Matched #{matches.length} Emojis in the message." }
+
+        matches.each do |new_emoji|
+          new_emoji = HoroBot2::Emoji.new(new_emoji)
+          if new_emoji.sequence_of_same?
+            new_emoji = new_emoji.to_single_emoji
+          end
+          @chatlog_emojis << new_emoji
+        end
+
+        while @chatlog_emojis.length > 100
+          @chatlog_emojis.shift
+        end
+      end
+    end
+
     # Increase temperature base on the message.
     heat = 0
     if message.text
@@ -120,7 +141,14 @@ class HoroBot2::Group
   # Send an Emoji.
 
   def send_emoji
-    selected = @emojis.sample
+    selected = nil
+
+    if @chatlog_emojis.any? && (rand(2) == 1)
+      selected = @chatlog_emojis.sample
+    else
+      selected = @emojis.sample
+    end
+
     result = if selected.single?
       selected * rand(1..5)
     else
