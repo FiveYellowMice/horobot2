@@ -22,6 +22,34 @@
         padding: 0.125rem;
         border: 1px solid black;
       }
+
+      .chatlog-emoji-stats {
+        list-style-type: none;
+        padding: 0;
+      }
+      .chatlog-emoji-stats-item {
+        display: inline-block;
+        margin: 1rem 0.125rem;
+
+        font-size: 16px;
+        width: 90px;
+      }
+      .chatlog-emoji-stats-bar {
+        background-color: blue;
+        margin: 2px auto;
+        padding: 0;
+        width: 60px;
+      }
+      .chatlog-emoji-stats-number {
+        margin: 2px;
+        text-align: center;
+      }
+      .chatlog-emoji-stats-emoji {
+        margin: 2px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: auto;
+      }
     </style>
   </head>
   <body>
@@ -50,7 +78,7 @@
     <% end %>
 
     <script>
-      ['emoji-list', 'chatlog-emoji-list'].forEach(function(togglableName) {
+      ['emoji-list'<% if group.chatlog_emojis.any? %>, 'chatlog-emoji-list'<% end %>].forEach(function(togglableName) {
         document.querySelector('.' + togglableName + '-switch').addEventListener('click', function(event) {
           var element = document.querySelector('.' + togglableName)
           if (element.className.split(' ').indexOf(togglableName + '-hidden') > -1) {
@@ -60,6 +88,81 @@
           } else {
             element.className = element.className + ' ' + togglableName + '-hidden'
           }
+        })
+      })
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var listElement = document.querySelector('.chatlog-emoji-list')
+        if (!listElement) {
+          return
+        }
+
+        var resultElement = document.createElement('ol')
+        resultElement.className = 'chatlog-emoji-stats'
+        document.querySelector('body').appendChild(resultElement)
+
+        var emojiList = [].slice.call(listElement.children).map(function(itemElement) {
+          return itemElement.innerText
+        })
+
+        // Do calculation.
+        var statResults = []
+        emojiList.forEach(function(emoji) {
+          var alreadyInResult = null
+          for (var i = 0; i < statResults.length; i++) {
+            if (statResults[i].emoji === emoji) {
+              alreadyInResult = statResults[i]
+              break
+            }
+          }
+
+          if (alreadyInResult) {
+            alreadyInResult.count = alreadyInResult.count + 1
+          } else {
+            statResults.push({
+              emoji: emoji,
+              count: 1
+            })
+          }
+        })
+
+        // Sort the results from greater to smaller.
+        statResults = statResults.sort(function(a, b) {
+          return b.count - a.count
+        })
+
+        // Determine the most count.
+        var mostCount = statResults.reduce(function(memo, resultObject) {
+          if (memo < resultObject.count) {
+            return resultObject.count
+          } else {
+            return memo
+          }
+        }, 0)
+
+        // Put results into DOM.
+        statResults.forEach(function(resultObject) {
+          var resultItemElement = document.createElement('li')
+          resultItemElement.className = 'chatlog-emoji-stats-item'
+
+          var bar = document.createElement('div')
+          bar.className = 'chatlog-emoji-stats-bar'
+          bar.style.height = (resultObject.count / mostCount * 140) + 'px'
+          resultItemElement.appendChild(bar)
+
+          var numberRep = document.createElement('div')
+          numberRep.className = 'chatlog-emoji-stats-number'
+          numberRep.innerText = resultObject.count
+          resultItemElement.appendChild(numberRep)
+
+          var emojiRep = document.createElement('div')
+          emojiRep.className = 'chatlog-emoji-stats-emoji'
+          emojiRep.innerText = resultObject.emoji
+          resultItemElement.appendChild(emojiRep)
+
+          resultElement.appendChild(resultItemElement)
         })
       })
     </script>

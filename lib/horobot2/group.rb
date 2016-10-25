@@ -103,7 +103,7 @@ class HoroBot2::Group
           @chatlog_emojis << new_emoji
         end
 
-        while @chatlog_emojis.length > 100
+        while @chatlog_emojis.length > 200
           @chatlog_emojis.shift
         end
       end
