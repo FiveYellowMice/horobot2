@@ -79,6 +79,7 @@ module HoroBot2::Bootstrap
     else
       {}
     end
+    persistent_emojis ||= {}
 
     # Start all adapters.
     HoroBot2::Adapters.constants.each do |adapter_name|
@@ -98,6 +99,8 @@ module HoroBot2::Bootstrap
       persistent_emojis = @groups.map do |group|
         [group.name, group.chatlog_emojis]
       end.to_h
+      data = JSON.dump(persistent_emojis)
+      @logger.info("Saving persistent Emojis, file size: #{data.bytesize}.")
       File.write(File.expand_path('chatlog_emojis.json', @data_dir), JSON.dump(persistent_emojis))
     end
 
