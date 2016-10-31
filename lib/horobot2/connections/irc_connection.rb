@@ -1,4 +1,6 @@
 require 'concurrent'
+require 'active_support'
+require 'active_support/core_ext/object/blank'
 
 ##
 # IRCConnection is the connection for IRCAdapter.
@@ -40,6 +42,30 @@ class HoroBot2::Connections::IRCConnection
   def connect
     adapter_server = @group.bot.adapters[HoroBot2::Adapters::IRCAdapter::CONFIG_SECTION].servers[@server]
     @channel = adapter_server.framework.join(@channel_name)
+  end
+
+
+  ##
+  # Respond to a command.
+
+  def command(command)
+    case command.name
+    when 'irc_show_ignored_users'
+      @group.send_text @ignored_users.any? ? "咱忽略了 #{@ignored_users.join(', ')} 。" : "咱没有忽略任何人呐。"
+    when 'irc_add_ignored_user'
+      raise(HoroBot2::HoroError, "汝要让咱忽略谁呢？") if command.arg.blank?
+      raise(HoroBot2::HoroError, "咱已经不再理会 #{command.arg} 了呐。") if @ignored_users.include? command.arg
+      @ignored_users << command.arg
+      @group.send_text "咱不会再理会 #{command.arg} 了。"
+      @group.bot.save_changes
+    when 'irc_rem_ignored_user'
+      raise(HoroBot2::HoroError, "咱还在意着 #{command.arg} 呐。") unless @ignored_users.include? command.arg
+      @ignored_users.delete command.arg
+      @group.send_text "咱会珍惜与 #{command.arg} 在一起的时光的。"
+      @group.bot.save_changes
+    else
+      @group.bot.logger.debug("IRCConnection '#{@group}'") { "Unknown command '#{command.name}'." }
+    end
   end
 
 

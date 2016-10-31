@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'activesupport'
 gem 'concurrent-ruby'
 gem 'concurrent-ruby-ext'
 

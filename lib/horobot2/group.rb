@@ -46,6 +46,13 @@ class HoroBot2::Group
     @bot.logger.debug("Group '#{self}'") { "Received command '#{command}'." }
 
     begin
+
+      # Test if the command is used by a Connection (starts with /^connection_name_.+/).
+      cmd_connection = @connections[(command.name.match(%r[^(#{@connections.keys.join('|')})_.+]) || { 1 => :nil })[1].to_sym]
+      if cmd_connection && cmd_connection.respond_to?(:command)
+        return cmd_connection.command command
+      end
+
       case command.name
       when 'help'
         send_text <<~END
@@ -77,6 +84,7 @@ class HoroBot2::Group
       else
         @bot.logger.debug("Group '#{self}'") { "Unknown command '#{command.name}'." }
       end
+
     rescue HoroBot2::HoroError => e
       send_text e.message
     end
