@@ -16,7 +16,7 @@ class HoroBot2
   autoload :EmojiError, 'horobot2/emoji_error'
 
 
-  attr_reader :adapters, :logger, :web_interface
+  attr_reader :adapters, :logger, :dev_mode, :web_interface
   attr_accessor :groups, :threads
 
   include HoroBot2::Bootstrap

@@ -18,9 +18,11 @@ class HoroBot2::WebInterface
     @baseurl = web_interface_config[:baseurl] || 'https://horobot.ml'
 
     # Prepare ERB templates.
-    @templates = {}
-    %w( status_all status_group ).each do |t_name|
-      @templates[t_name] = ERB.new(File.read(File.expand_path("../web_interface/#{t_name}.html.erb", __FILE__)))
+    unless @bot.dev_mode
+      @templates = {}
+      %w( status_all status_group ).each do |t_name|
+        @templates[t_name] = ERB.new(File.read(File.expand_path("../web_interface/#{t_name}.html.erb", __FILE__)))
+      end
     end
   end
 
@@ -70,6 +72,27 @@ class HoroBot2::WebInterface
   end
 
 
+  ##
+  # Render a ERB template.
+
+  def render_template(name, data = {})
+    b = binding
+    data.each do |k, v|
+      b.local_variable_set k, v
+    end
+
+    template = unless @bot.dev_mode
+      @templates[name]
+    else
+      ERB.new(File.read(File.expand_path("../web_interface/#{name}.html.erb", __FILE__)))
+    end
+
+    template.result(b)
+  end
+
+  private :render_template
+
+
   def to_hash
     {
       address: @address,
@@ -87,9 +110,7 @@ class HoroBot2::WebInterface
 
 
     def status_all(rack_env)
-      b = binding
-      b.local_variable_set :data, { groups: @bot.groups }
-      [200, { 'Content-Type': 'text/html; charset=utf-8' }, [@templates['status_all'].result(b)]]
+      [200, { 'Content-Type': 'text/html; charset=utf-8' }, [render_template('status_all', groups: @bot.groups)]]
     end
 
 
@@ -106,13 +127,12 @@ class HoroBot2::WebInterface
         return [404, { 'Content-Type': 'text/plain; charset="utf-8"' }, ["Not found.\n"]]
       end
 
-      b = binding
-      b.local_variable_set :data, { group: group }
-      [200, { 'Content-Type': 'text/html; charset=utf-8' }, [@templates['status_group'].result(b)]]
+      [200, { 'Content-Type': 'text/html; charset=utf-8' }, [render_template('status_group', group: group)]]
     end
 
 
   end
+
 
   include Operations
   include ERB::Util

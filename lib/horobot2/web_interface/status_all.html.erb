@@ -20,7 +20,7 @@
   <body>
     <h1>HoroBot2 Status</h1>
     <ul class="group-list">
-      <% data[:groups].each do |group| %>
+      <% groups.each do |group| %>
       <li class="group-list-item">
         <a href="/status/<%= h u group.name %>"><%= h group.name %></a>
       </li>
