@@ -48,7 +48,11 @@
         margin: 2px;
         text-align: center;
         white-space: nowrap;
-        overflow: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chatlog-emoji-stats-emoji:hover {
+        white-space: normal;
       }
     </style>
   </head>
@@ -164,6 +168,10 @@
           resultElement.appendChild(resultItemElement)
         })
       })
+    </script>
+
+    <script>
+      document.addEventListener('touch', function(){}, { capture: true, passive: true })
     </script>
   </body>
 </html>
