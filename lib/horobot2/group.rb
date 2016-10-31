@@ -11,10 +11,10 @@ class HoroBot2::Group
   ##
   # Initialize the group, create connecions.
 
-  def initialize(bot, group_config)
+  def initialize(bot, group_config = {}, persistent_data = {})
     @bot = bot
     @temperature = 0
-    @chatlog_emojis = []
+    @chatlog_emojis = (persistent_data[:chatlog_emojis] || []).map {|e| HoroBot2::Emoji.new(e) }
 
     @name = group_config[:name] || raise(ArgumentError, 'Group must have a name.')
     @emojis = (group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"]).map {|x| HoroBot2::Emoji.new(x) }
