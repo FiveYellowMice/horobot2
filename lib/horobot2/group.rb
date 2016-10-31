@@ -1,4 +1,6 @@
 require 'concurrent'
+require 'active_support'
+require 'active_support/core_ext/object/blank'
 
 ##
 # A Group represents a group on social networks. It can connect to multiple social networks simultaniously using different Connections.
@@ -236,6 +238,8 @@ class HoroBot2::Group
   # Add an Emoji to the Emoji list.
 
   def add_emoji(new_emoji)
+    raise(HoroBot2::HoroError, "汝想要加入什么 Emoji 呢？") if new_emoji.blank?
+
     new_emoji = HoroBot2::Emoji.new(new_emoji)
     if new_emoji.sequence_of_same?
       new_emoji = new_emoji.to_single_emoji
