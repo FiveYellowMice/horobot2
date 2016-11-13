@@ -83,6 +83,13 @@ class HoroBot2::Group
         add_emoji command.arg
       when 'rem_emoji'
         rem_emoji command.arg
+      when 'poi'
+        if command.arg.blank?
+          send_image url: "https://util.fiveyellowmice.com/horo-poi.jpg?te=506f6921"
+        else
+          encoded = command.arg.bytes.map{ |b| b.to_s(16) }.join
+          send_image url: "https://util.fiveyellowmice.com/horo-poi.jpg?te=" + encoded
+        end
       else
         @bot.logger.debug("Group '#{self}'") { "Unknown command '#{command.name}'." }
       end
@@ -195,6 +202,19 @@ class HoroBot2::Group
   def send_text(text)
     send_message HoroBot2::OutgoingMessage.new(
       text: text,
+      group: self
+    )
+  end
+
+
+  ##
+  # Helper method for sending images.
+
+  def send_image(options = {})
+    url = options[:url] || raise(ArgumentError, 'No URL specified for send_image')
+    send_message HoroBot2::OutgoingMessage.new(
+      image: url,
+      text: options[:text],
       group: self
     )
   end

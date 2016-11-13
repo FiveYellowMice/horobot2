@@ -50,7 +50,12 @@ class HoroBot2::Connections::TelegramConnection < HoroBot2::Connection
     @group.bot.logger.debug("TelegramConnection '#{@group}'") { "Sending: #{message}" }
 
     adapter = @group.bot.adapters[HoroBot2::Adapters::TelegramAdapter::CONFIG_SECTION]
-    adapter.bot_api.send_message(chat_id: @group_id, text: message.text)
+
+    if message.image
+      adapter.bot_api.send_photo(chat_id: @group_id, photo: message.image, caption: message.text)
+    else
+      adapter.bot_api.send_message(chat_id: @group_id, text: message.text)
+    end
   end
 
 
