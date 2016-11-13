@@ -56,15 +56,42 @@ namespace :chatlog_emojis do
 
     File.write('var/chatlog_emojis.json', JSON.dump(data))
   end
-  
+
   task :push do
     raise('chatlog_emojis.json does not exist.') unless File.exist?('var/chatlog_emojis.json')
-    
+
     temp_id = ('a'..'z').to_a.shuffle[0,8].join
-    
+
     sh "scp var/chatlog_emojis.json potato1:/tmp/chatlog_emojis.json.#{temp_id}"
     sh "ssh -t potato1 sudo -u labrat cp /tmp/chatlog_emojis.json.#{temp_id} /var/lib/labrat/horobot2/var/chatlog_emojis.json"
     sh "ssh potato1 rm /tmp/chatlog_emojis.json.#{temp_id}"
+  end
+
+end
+
+namespace :docker do
+
+  task :prepare_build do
+    require 'fileutils'
+    FileUtils.mkdir 'docker-build'
+    %w(bin lib Gemfile Gemfile.lock Dockerfile Rakefile LICENSE README.md).each do |f|
+      puts "Copying #{f}"
+      FileUtils.cp_r f, 'docker-build/'
+    end
+  end
+
+  task :cleanup_build do
+    require 'fileutils'
+    puts 'Deleting docker-build'
+    FileUtils.rm_rf 'docker-build'
+  end
+
+  task :run_inside do
+    puts 'Please copy config.yaml into the container with the following command.'
+    puts "  $ docker cp config.yaml #{ENV['HOSTNAME'] || 'NAME_OF_CONTAINER'}:/usr/src/horobot2/"
+    sleep 2 until File.exist? 'config.yaml'
+    puts 'Found config.yaml, starting...'
+    exec 'bin/horobot2'
   end
 
 end
