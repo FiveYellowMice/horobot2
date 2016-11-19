@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HoroBot2 Control Panel</title>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+      .block {
+        display: block;
+        margin: 0.5em 0 0.5em 0;
+      }
+      .control-group {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        padding: 0.5em;
+        border: 1px solid black;
+      }
+      .control-group-title {
+        margin: 0;
+      }
+      #manual-message-log-buffer {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HoroBot2 Control Panel</h1>
+    <label class="block">
+      Password:
+      <input id="password" type="password" autocomplete="off">
+    </label>
+    <div class="control-group">
+      <h2 class="control-group-title">Manual messages</h2>
+      <textarea id="manual-message-log-buffer"></textarea>
+      <label class="block">
+        Target group:<br>
+        <select id="manual-message-target-group">
+          <option value="" selected disabled>Please select</option>
+          <% groups.each do |group| %>
+          <option value="<%= h group.name %>"><%= h group.name %></option>
+          <% end %>
+        </select>
+      </label>
+      <label class="block">
+        Message text:<br>
+        <input id="manual-message-message-text" type="text" autocomplete="off">
+      </label>
+      <button id="manual-message-send-button" class="block">Send</button>
+    </div>
+
+    <script>
+    (function() {
+      function sendInstruction(obj, callback) {
+        obj = JSON.parse(JSON.stringify(obj)) // Copy
+        obj.password = document.getElementById('password').value
+
+        var body = JSON.stringify(obj)
+        var request = new XMLHttpRequest()
+        request.open('POST', '/control', true)
+        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8')
+
+        request.addEventListener('error', function() {
+          callback(new Error('Request error.'))
+        })
+        request.addEventListener('load', function() {
+          try {
+            var responseObj = JSON.parse(request.responseText)
+            if (responseObj.ok) {
+              callback(null, responseObj)
+            } else {
+              callback(new Error(responseObj.message))
+            }
+          } catch (err) {
+            callback(new Error(request.responseText))
+          }
+        })
+
+        request.send(body)
+      }
+
+      document.getElementById('manual-message-send-button').addEventListener('click', function(event) {
+        function writeLog(text) {
+          var buffer = document.getElementById('manual-message-log-buffer')
+          buffer.style.display = 'block'
+          buffer.value = buffer.value + text + "\n"
+        }
+
+        var group = document.getElementById('manual-message-target-group').value
+        if (!group) {
+          writeLog('No group specified.')
+          return
+        }
+        var text = document.getElementById('manual-message-message-text').value
+        if (!text) {
+          writeLog('No text written.')
+          return
+        }
+
+        event.target.disabled = true
+        sendInstruction({
+          method: 'send_message',
+          group_name: group,
+          text: text
+        }, function(err, response) {
+          event.target.disabled = false
+          if (err) {
+            writeLog('Error: ' + err.message)
+            return
+          }
+          writeLog(group + ' <-- ' + text)
+          document.getElementById('manual-message-message-text').value = ''
+        })
+      })
+    })()
+    </script>
+  </body>
+</html>
