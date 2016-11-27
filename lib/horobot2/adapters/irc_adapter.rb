@@ -45,6 +45,7 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
       @address = server_config[:address] || raise(ArgumentError, 'IRCServer must have an address.')
       @port = server_config[:port] || raise(ArgumentError, 'IRCServer must have a port.')
       @nick = server_config[:nick] || raise(ArgumentError, 'IRCServer must have a nick.')
+      @password = server_config[:password] || raise(ArgumentError, 'IRCServer must have a password.')
 
       @framework = Cinch::Bot.new do
         configure do |c|
@@ -52,6 +53,11 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
           c.port = server_config[:port]
           c.ssl = Cinch::Configuration::SSL.new(use: true)
           c.nick = server_config[:nick]
+          c.password = server_config[:password]
+          c.sasl = Cinch::Configuration::SASL.new(
+            username: server_config[:nick],
+            password: server_config[:password]
+          )
           c.channels = []
         end
       end
@@ -162,7 +168,8 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
       {
         address: @address,
         port: @port,
-        nick: @nick
+        nick: @nick,
+        password: @password
       }
     end
 
