@@ -64,7 +64,7 @@ class HoroBot2::Group
           For help related to commands, see https://horobot.ml/commands.php .
         END
       when 'status'
-        send_text <<~END
+        send_text <<~END.chomp
           Status of #{self.name}:
           Temperature: #{self.temperature}/#{self.threshold}
           Cooling speed: #{self.cooling_speed}

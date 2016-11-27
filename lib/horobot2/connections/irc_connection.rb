@@ -75,7 +75,7 @@ class HoroBot2::Connections::IRCConnection
   def send_message(message)
     if @channel
       @group.bot.logger.debug("IRCConnection '#{@group}'") { "Sending: #{message}" }
-      text = message.text ? message.text.gsub("\n", '  ') : ''
+      text = message.text ? message.text.gsub("\n", ' | ') : ''
       if message.image
         text = message.image + ' ' + text
       end
