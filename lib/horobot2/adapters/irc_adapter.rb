@@ -139,6 +139,7 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
               time: irc_message.time,
               author: irc_message.user.nick,
               text: irc_message.message,
+              reply_to_me: reply_to_me?(irc_message),
               group: target_group
             )
             begin
@@ -162,6 +163,15 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
       return false unless irc_message.message =~ %r[^(?:horo|#{@nick}: ?)/\w+]i
       return true
     end
+
+    private :command?
+
+
+    def reply_to_me?(irc_message)
+      irc_message.message.start_with? "#{@nick}: "
+    end
+
+    private :reply_to_me?
 
 
     def to_hash

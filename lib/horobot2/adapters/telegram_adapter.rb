@@ -80,6 +80,7 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
           author: telegram_message.from.username || telegram_message.from.first_name,
           text: telegram_message.text || telegram_message.caption,
           image: telegram_message.sticker || (telegram_message.photo.any? ? true : false),
+          reply_to_me: reply_to_me?(telegram_message),
           group: target_group
         )
         begin
@@ -105,6 +106,14 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
   end
 
   private :command?
+
+
+  def reply_to_me?(telegram_message)
+    return false unless telegram_message.reply_to_message
+    telegram_message.reply_to_message.from.username == @username
+  end
+
+  private :reply_to_me?
 
 
   def to_hash

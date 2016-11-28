@@ -119,6 +119,9 @@ module HoroBot2::Bootstrap
     @web_interface = HoroBot2::WebInterface.new(self, config[:web_interface])
     @web_interface.start
 
+    # Initialize HoroSpeak.
+    @horo_speak = HoroBot2::HoroSpeak.new(self, config[:horo_speak])
+
     #@threads.each do |t| t.abort_on_exception = true end
     Thread.abort_on_exception = true
     ThreadsWait.all_waits(*@threads)

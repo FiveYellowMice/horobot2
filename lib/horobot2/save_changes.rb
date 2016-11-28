@@ -44,6 +44,7 @@ module HoroBot2::SaveChanges
     {
       adapters: @adapters.map {|key, value| [key, value.to_h] }.to_h,
       web_interface: @web_interface.to_h,
+      horo_speak: @horo_speak.to_h,
       groups: @groups.map(&:to_h)
     }
   end

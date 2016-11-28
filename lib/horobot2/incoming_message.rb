@@ -2,7 +2,7 @@
 # An IncomingMessage represents a generic message received by HoroBot2.
 
 class HoroBot2::IncomingMessage
-  attr_accessor :time, :author, :text, :image, :group
+  attr_accessor :time, :author, :text, :image, :reply_to_me, :group
 
 
   def initialize(options = {})
@@ -10,6 +10,7 @@ class HoroBot2::IncomingMessage
     @author = options[:author]
     @text = options[:text]
     @image = options[:image]
+    @reply_to_me = options[:reply_to_me]
     @group = options[:group]
   end
 
