@@ -7,7 +7,7 @@ require 'active_support/core_ext/object/blank'
 
 class HoroBot2::Group
 
-  attr_reader :bot, :temperature, :name, :connections, :emojis, :chatlog_emojis, :threshold, :cooling_speed
+  attr_reader :bot, :temperature, :name, :connections, :emojis, :chatlog_emojis, :threshold, :cooling_speed, :horo_speak_on_reply
 
 
   ##
@@ -22,6 +22,7 @@ class HoroBot2::Group
     @emojis = (group_config[:emojis] || ["\u{1f602}", "\u{1f60b}"]).map {|x| HoroBot2::Emoji.new(x) }
     @threshold = group_config[:threshold] || 100
     @cooling_speed = group_config[:cooling_speed] || 10
+    @horo_speak_on_reply = group_config[:horo_speak_on_reply].nil? ? true : !!group_config[:horo_speak_on_reply]
 
     @connections = {}
     group_config[:connections].each do |connection_config_name, connection_config|
@@ -79,6 +80,8 @@ class HoroBot2::Group
         set_threshold command.arg.to_i
       when 'set_cooling_speed'
         set_cooling_speed command.arg.to_i
+      when 'set_horo_speak_on_reply'
+        set_horo_speak_on_reply command.arg
       when 'add_emoji'
         add_emoji command.arg
       when 'rem_emoji'
@@ -156,6 +159,7 @@ class HoroBot2::Group
 
     # Reply replies with HoroSpeak.
     if
+      @horo_speak_on_reply &&
       message.reply_to_me &&
       message.author &&
       (
@@ -290,6 +294,24 @@ class HoroBot2::Group
 
 
   ##
+  # Set if the bot should send a HoroSpeak sentence when got replied.
+
+  def set_horo_speak_on_reply(value)
+    if %w[yes true on].include? value.strip.downcase
+      @horo_speak_on_reply = true
+      send_text "咱又回来了。"
+      @bot.save_changes
+    elsif %w[no false off].include? value.strip.downcase
+      @horo_speak_on_reply = false
+      send_text "好的，咱闭嘴。"
+      @bot.save_changes
+    else
+      send_text "汝可以用 yes, true, on, no, false, off 来作为这条命令的参数呐。"
+    end
+  end
+
+
+  ##
   # Add an Emoji to the Emoji list.
 
   def add_emoji(new_emoji)
@@ -334,6 +356,7 @@ class HoroBot2::Group
       name: @name,
       threshold: @threshold,
       cooling_speed: @cooling_speed,
+      horo_speak_on_reply: @horo_speak_on_reply,
       emojis: @emojis.map(&:to_s),
       connections: @connections.map {|key, value| [key, value.to_h]}.to_h
     }
