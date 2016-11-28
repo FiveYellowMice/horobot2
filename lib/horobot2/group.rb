@@ -7,7 +7,8 @@ require 'active_support/core_ext/object/blank'
 
 class HoroBot2::Group
 
-  attr_reader :bot, :temperature, :name, :connections, :emojis, :chatlog_emojis, :threshold, :cooling_speed, :horo_speak_on_reply
+  attr_reader :bot, :temperature, :name, :connections, :emojis, :chatlog_emojis, :threshold, :cooling_speed
+  attr_accessor :horo_speak_on_reply
 
 
   ##

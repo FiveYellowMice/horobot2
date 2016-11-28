@@ -164,10 +164,24 @@ class HoroBot2::WebInterface
         raise AuthenticationFailed unless instruction['password'] == @password
         case instruction['method']
         when 'send_message'
-          target_group = @bot.groups.select{|g| g.name == instruction['group_name'] }[0]
+          target_group = @bot.groups.find{|g| g.name == instruction['group_name'] }
           raise "Group '#{instruction['group_name']}' is not found." unless target_group && instruction['text']
           target_group.send_text instruction['text']
           [200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' }, [JSON.generate(ok: true)]]
+        when 'set_horo_speak_on_reply'
+          target_group = @bot.groups.find{|g| g.name == instruction['group_name'] }
+          raise "Group '#{instruction['group_name']}' is not found." unless target_group
+          if instruction['toggle'] == true
+            target_group.horo_speak_on_reply = true
+            @bot.save_changes
+          elsif instruction['toggle'] == false
+            target_group.horo_speak_on_reply = false
+            @bot.save_changes
+          end
+          [200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' }, [JSON.generate(
+            ok: true,
+            horo_speak_on_reply: target_group.horo_speak_on_reply
+          )]]
         else
           raise "Unknown method '#{instruction['method']}'."
         end

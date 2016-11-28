@@ -28,6 +28,9 @@
         height: 12em;
         resize: none;
       }
+      #hsor-switch-switch {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -36,6 +39,7 @@
       Password:
       <input id="password" type="password" autocomplete="off">
     </label>
+
     <div class="control-group">
       <h2 class="control-group-title">Manual messages</h2>
       <textarea id="manual-message-log-buffer"></textarea>
@@ -53,6 +57,20 @@
         <input id="manual-message-message-text" type="text" autocomplete="off">
       </label>
       <button id="manual-message-send-button" class="block">Send</button>
+    </div>
+
+    <div class="control-group">
+      <h2 class="control-group-title">HoroSpeak on reply switch</h2>
+      <select id="hsor-switch-target-group">
+        <option value="" selected disabled>Please select</option>
+        <% groups.each do |group| %>
+        <option value="<%= h group.name %>"><%= h group.name %></option>
+        <% end %>
+      </select>
+      <select id="hsor-switch-switch">
+        <option value="true">On</option>
+        <option value="false">Off</option>
+      </select>
     </div>
 
     <script>
@@ -84,6 +102,9 @@
 
         request.send(body)
       }
+
+
+      // Manual messages
 
       document.getElementById('manual-message-send-button').addEventListener('click', sendManualMessage)
       document.getElementById('manual-message-message-text').addEventListener('keydown', function(event) {
@@ -127,6 +148,53 @@
           document.getElementById('manual-message-message-text').value = ''
         })
       }
+
+
+      // HoroSpeak on reply switch
+
+      document.getElementById('hsor-switch-target-group').addEventListener('change', function(event) {
+        var groupMenu = event.target
+        var switchMenu = document.getElementById('hsor-switch-switch')
+        switchMenu.style.display = 'none'
+        sendInstruction({
+          method: 'set_horo_speak_on_reply',
+          group_name: groupMenu.value
+        }, function(err, responseObj) {
+          if (err) {
+            alert(err.message)
+            groupMenu.selectedIndex = 0
+            return
+          }
+          switchMenu.selectedIndex = responseObj.horo_speak_on_reply ? 0 : 1
+          switchMenu.style.display = 'block'
+        })
+      })
+
+      document.getElementById('hsor-switch-switch').addEventListener('change', function(event) {
+        var groupMenu = document.getElementById('hsor-switch-target-group')
+        var switchMenu = event.target
+        switchMenu.disabled = true
+        var toggle
+        if (switchMenu.value === 'true') {
+          toggle = true
+        } else if (switchMenu.value === 'false') {
+          toggle = false
+        }
+        sendInstruction({
+          method: 'set_horo_speak_on_reply',
+          group_name: groupMenu.value,
+          toggle: toggle
+        }, function(err, responseObj) {
+          if (err) {
+            alert(err.message)
+            switchMenu.style.display = 'none'
+            switchMenu.disabled = false
+            return
+          }
+          switchMenu.selectedIndex = responseObj.horo_speak_on_reply ? 0 : 1
+          switchMenu.disabled = false
+        })
+      })
     })()
     </script>
   </body>
