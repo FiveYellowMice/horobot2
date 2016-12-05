@@ -168,7 +168,7 @@ class HoroBot2::Adapters::IRCAdapter < HoroBot2::Adapter
 
 
     def reply_to_me?(irc_message)
-      irc_message.message.start_with? "#{@nick}: "
+      irc_message.message =~ /(?:^\[\w+\] ?)?#{@nick}:/
     end
 
     private :reply_to_me?
