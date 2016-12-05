@@ -67,7 +67,7 @@ class HoroBot2::HoroSpeak
         if last_chars.length == last_char_count
           random_indices.find do |sentence_index|
             sentence = @sentences[sentence_index]
-            if sentence_index != avoided_index && (sentence[-10..-1] || sentence).include?(last_chars)
+            if sentence_index + 1 != avoided_index && (sentence[-10..-1] || sentence).include?(last_chars)
               selected_sentence_index = sentence_index
             end
           end
@@ -81,7 +81,7 @@ class HoroBot2::HoroSpeak
     answer_slice_index = 0
     times_looped = 0
 
-    while answer.length < 32 && times_looped < 200
+    while answer.length < 32 && times_looped < 20
       @bot.logger.debug('HoroSpeak') { "Start while loop for #{times_looped} time, answer: #{answer}" }
       selected_sentence = @sentences[selected_sentence_index]
       last_chars = ''
@@ -105,6 +105,7 @@ class HoroBot2::HoroSpeak
               if sentence_last_chars_index
                 answer += last_chars
                 selected_sentence_index = sentence_index
+                selected_sentence = @sentences[selected_sentence_index]
                 answer_slice_index = sentence_last_chars_index + last_chars.length
                 yield last_chars
                 true
@@ -117,6 +118,7 @@ class HoroBot2::HoroSpeak
       if !new_sentence_found
         if answer.empty?
           selected_sentence_index = (selected_sentence_index + 1) % @sentences.length
+          selected_sentence = @sentences[selected_sentence_index]
           answer_slice_index = 0
         elsif
           recursion_level < 20 && (
@@ -133,11 +135,11 @@ class HoroBot2::HoroSpeak
             last_segment = answer
           end
           @bot.logger.debug('HoroSpeak') { "Enter recursion level #{recursion_level + 1}, answer: #{answer}" }
-          get_answer(answer, selected_sentence_index, last_segment, recursion_level + 1) do |segment|
-            answer += segment
+          get_answer(last_chars, selected_sentence_index, last_segment, recursion_level + 1) do |segment|
             yield segment
           end
           @bot.logger.debug('HoroSpeak') { "Exit recursion level #{recursion_level + 1}, answer: #{answer}" }
+          return
         else
           yield last_chars
           return
