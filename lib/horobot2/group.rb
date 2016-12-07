@@ -129,6 +129,8 @@ class HoroBot2::Group
         while @chatlog_emojis.length > 200
           @chatlog_emojis.shift
         end
+
+        @bot.save_persistent_data
       end
     end
 

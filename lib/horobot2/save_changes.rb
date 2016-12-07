@@ -38,6 +38,38 @@ module HoroBot2::SaveChanges
 
 
   ##
+  # Lavily save persistent data.
+
+  def save_persistent_data
+    if !@persistent_data_save_scheduled
+      @persistent_data_save_scheduled = true
+      @logger.debug("Persistent data saving is scheduled.")
+      Concurrent::ScheduledTask.execute(10) do
+        begin
+          save_persistent_data!
+          @logger.debug("Persistent data saved.")
+          @persistent_data_save_scheduled = false
+        rescue => e
+          @logger.error("Error saving persistent data: #{e} #{e.backtrace_locations[0]}")
+        end
+      end
+    end
+  end
+
+
+  ##
+  # Save persistent data immediately.
+
+  def save_persistent_data!
+    # Emojis
+    persistent_emojis = @groups.map do |group|
+      [group.name, group.chatlog_emojis]
+    end.to_h
+    File.write(File.expand_path('chatlog_emojis.json', @data_dir), JSON.dump(persistent_emojis))
+  end
+
+
+  ##
   # Convert the bot itself into a hash containing all the configurations.
 
   def to_hash

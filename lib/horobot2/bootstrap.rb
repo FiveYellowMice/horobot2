@@ -94,16 +94,6 @@ module HoroBot2::Bootstrap
       @logger.debug "Loaded group '#{group_config[:name]}'."
     end
 
-    # Prepare persistent chatlog Emoji.
-    at_exit do
-      persistent_emojis = @groups.map do |group|
-        [group.name, group.chatlog_emojis]
-      end.to_h
-      data = JSON.dump(persistent_emojis)
-      @logger.info("Saving persistent Emojis, file size: #{data.bytesize}.")
-      File.write(File.expand_path('chatlog_emojis.json', @data_dir), JSON.dump(persistent_emojis))
-    end
-
     # Cool down groups per minute.
     Concurrent::TimerTask.execute(execution_interval: 60) do
       @groups.each do |group|
