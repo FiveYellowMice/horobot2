@@ -81,6 +81,12 @@ module HoroBot2::Bootstrap
     end
     persistent_emojis ||= {}
 
+    # Initialize HoroSpeak.
+    @horo_speak = HoroBot2::HoroSpeak.new(self, config[:horo_speak])
+
+    # Load plugins.
+    @plugins = HoroBot2::Plugins.new(self)
+
     # Start all adapters.
     HoroBot2::Adapters.constants.each do |adapter_name|
       adapter = HoroBot2::Adapters.const_get(adapter_name)
@@ -108,9 +114,6 @@ module HoroBot2::Bootstrap
     # Initialize WebInterface.
     @web_interface = HoroBot2::WebInterface.new(self, config[:web_interface])
     @web_interface.start
-
-    # Initialize HoroSpeak.
-    @horo_speak = HoroBot2::HoroSpeak.new(self, config[:horo_speak])
 
     #@threads.each do |t| t.abort_on_exception = true end
     Thread.abort_on_exception = true

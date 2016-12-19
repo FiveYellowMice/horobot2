@@ -182,6 +182,9 @@ class HoroBot2::WebInterface
             ok: true,
             horo_speak_on_reply: target_group.horo_speak_on_reply
           )]]
+        when 'reload_plugins'
+          @bot.plugins.reload_plugins
+          [200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' }, [JSON.generate(ok: true)]]
         else
           raise "Unknown method '#{instruction['method']}'."
         end

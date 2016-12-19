@@ -174,6 +174,21 @@ class HoroBot2::Group
       @bot.logger.debug("Group '#{self}'") { "Replying reply to bot with HoroSpeak." }
       send_horo_speak message.text, delay: true
     end
+
+    # Invoke plugins.
+    @bot.plugins.each do |plugin|
+      if plugin.respond_to? :receive
+        if
+          !plugin.class.const_defined?(:RECEIVE_ONLY_WHEN_MATCH) ||
+          (message.text && message.text =~ plugin.class::RECEIVE_ONLY_WHEN_MATCH)
+        then
+          @bot.logger.debug("Group '#{self}'") { "Invoking plugin #{plugin.class}." }
+          Concurrent::Future.execute do
+            plugin.receive(message)
+          end
+        end
+      end
+    end
   end
 
 

@@ -73,6 +73,11 @@
       </select>
     </div>
 
+    <div class="control-group">
+      <h2 class="control-group-title">Plugin reload button</h2>
+      <button id="plugin-reload-button">Reload all plugins</button>
+    </div>
+
     <script>
     (function() {
       function sendInstruction(obj, callback) {
@@ -193,6 +198,20 @@
           }
           switchMenu.selectedIndex = responseObj.horo_speak_on_reply ? 0 : 1
           switchMenu.disabled = false
+        })
+      })
+
+      // Plugin reload button
+
+      document.getElementById('plugin-reload-button').addEventListener('click', function(event) {
+        sendInstruction({
+          method: 'reload_plugins'
+        }, function(err) {
+          if (err) {
+            alert(err.message)
+            return
+          }
+          alert("Plugins have been reloaded.")
         })
       })
     })()

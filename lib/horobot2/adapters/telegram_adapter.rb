@@ -34,6 +34,9 @@ class HoroBot2::Adapters::TelegramAdapter < HoroBot2::Adapter
             end
           rescue Telegram::Bot::Exceptions::ResponseError => e
             @bot.logger.error('TelegramAdapter') { "#{e}" }
+          rescue Faraday::ConnectionFailed => e
+            @bot.logger.error('TelegramAdapter') { "#{e}" }
+            sleep 1
           end
         end
       end

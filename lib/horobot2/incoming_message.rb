@@ -15,6 +15,9 @@ class HoroBot2::IncomingMessage
   end
 
 
+  alias_method :reply_to_me?, :reply_to_me
+
+
   def to_s(level = :simple)
     if level == :detail
       "[#{@author}] #{@image ? '<Image> ' : ''}#{@text}"
