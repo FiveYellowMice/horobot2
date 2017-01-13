@@ -172,7 +172,7 @@ class HoroBot2::Group
       )
     then
       @bot.logger.debug("Group '#{self}'") { "Replying reply to bot with HoroSpeak." }
-      send_horo_speak message.text, delay: true
+      send_horo_speak(message.text || '', delay: true)
     end
 
     # Invoke plugins.
