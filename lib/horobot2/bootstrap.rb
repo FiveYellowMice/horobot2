@@ -81,8 +81,9 @@ module HoroBot2::Bootstrap
     end
     persistent_emojis ||= {}
 
-    # Initialize HoroSpeak.
+    # Initialize HoroSpeak and WolfDetector.
     @horo_speak = HoroBot2::HoroSpeak.new(self, config[:horo_speak])
+    @wolf_detector = HoroBot2::WolfDetector.new(self, config[:wolf_detector])
 
     # Load plugins.
     @plugins = HoroBot2::Plugins.new(self)

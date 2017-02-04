@@ -89,6 +89,15 @@ class HoroBot2::Group
         rem_emoji command.arg
       when 'speak'
         send_horo_speak command.arg
+      when 'detect_wolf'
+        user = command.arg.blank? ? command.sender : command.arg
+        if user
+          if @bot.wolf_detector.user_is_wolf?(user)
+            send_text "#{user} 是咱的同类呐。"
+          else
+            send_text "#{user} 不是咱的同类呐。"
+          end
+        end
       when 'poi'
         if command.arg.blank?
           send_image url: "https://util.fiveyellowmice.com/horo-poi.jpg?te=506f6921"
@@ -174,6 +183,9 @@ class HoroBot2::Group
       @bot.logger.debug("Group '#{self}'") { "Replying reply to bot with HoroSpeak." }
       send_horo_speak(message.text || '', delay: true)
     end
+
+    # Call WolfDetector.
+    @bot.wolf_detector.receive(message)
 
     # Invoke plugins.
     @bot.plugins.each do |plugin|
