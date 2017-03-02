@@ -1,10 +1,5 @@
-# HoroBot2
+# This repository has been moved
 
-A bot used to try to become Horo, but now it has evolved.
+Because GitHub's recent ToS change conflicts with GPLv3, this repository has been moved to GitLab. New commits will not be pushed here. Please go to the new repository instead.
 
-🌚 🌝 😂 😋
-
-## Features
-
-- Send random Emoji to your group.
-- Compatible with both Telegram and IRC.
+**URL of the new repository: <https://gitlab.com/FiveYellowMice/horobot2>**
